@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+	html,body,*{margin: 0;padding: 0;}
+		.wrap{width: 280px;height: 90px;overflow: hidden;position: absolute;background-color: black;top: 100px;}
+		.wrap li{width: 50px;height: 90px;list-style: none;float: right;padding: 0px 10px;}
+	</style>
+	<script src="jq.js"></script>
+</head>
+<body>
+	<div class="wrap">
+	</div>
+	
+	<script src="../scrollnumber.js"></script>
+	<script>
+		window.onload = function () {
+			$('.wrap').lottery({
+				number:4,
+				width:50,
+				height:90,
+				length:10,
+				result: 4567,
+				time: 3,
+				bg: 'number.png',
+				speed:0,
+				callback: function(){
+					console.log('over');
+				}
+			});
+		}
+	</script>
+</body>
+</html>

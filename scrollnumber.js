@@ -10,8 +10,9 @@
 			delay: 1,//每个数字间的延迟
 			time: 10,//持续时间
 			result: 0,//结果
-			speed: 2,//速度
-			callback: ''//结束回调
+			speed: 5,//速度,
+			fps:30,
+			callback: null//结束回调
 		};
 
 		if(opt && typeof opt == 'object'){
@@ -19,7 +20,7 @@
 			//if(!set.now || !set.end) return;//alert('必要参数[now/end]未传入！');
 			//if(set.end <= set.now && set.tipend) return $obj.html(set.tipend);
 		}
-		var s = '_lotteryKey', k = $obj.attr(s),dis = [],t = 0,d=[];
+		var s = '_lotteryKey', k = $obj.attr(s),dis = [],t = 0,d=[],isOver = 0,$top = $obj.offset().top;
 		if(k){
 			if(f[k]) clearInterval(f[k]);//防止重复加载
 			if(opt === 'stop') return;//停止
@@ -53,10 +54,10 @@
 		function calDistance(){
 			var res = set.result,len = res.toString().length;
 			for(i = 0;i < len;i++){
-				if(res > 0){
+				if(res >= 0){
 					dis[i] = res % set.length;
 					res = (res - dis[i])/set.length;
-					dis[i] = set.height * (set.length * 2 + dis[i]);
+					dis[i] = set.height * (set.length * set.speed + dis[i]);
 				}
 			}
 			startRoll();
@@ -98,6 +99,10 @@
 				move(ele,v,0,(dis[i]*6)/8,d[i][j],function(){
 					d[i][j] = dis[i]/8;
 					move(ele,v,-a,dis[i]/8,d[i][j],function(){
+						isOver += 1;
+						if(isOver == (set.number * 2) && set.callback && typeof(set.callback) == 'function'){
+							set.callback();
+						}
 					});
 				})
 			});
@@ -106,16 +111,16 @@
 		//改变高度
 		function move(e,v,a,s,d,callback){
 			var s0 = 0;
-			var top0 = e.offset().top;
+			var top0 = e.offset().top - $top;
 			var  c = correct(top0 - d);
 			var int1 = setInterval(function(){
 				if(s0 < s && v >= 0){
 					v += a;
 					s0 += v;
-					if(e.offset().top <= -set.height * set.length){
+					if(e.offset().top - $top <= -set.height * set.length){
 						e.trigger('myevent');
 					}
-					var top = e.offset().top;
+					var top = e.offset().top - $top;
 					e.css('top',top - v +'px');
 				}else{
 					s0 = 0;
@@ -130,7 +135,7 @@
 
 		//滚动到上面之后重新设置高度
 		function setTop(ele){
-			var top = ele.offset().top + (set.height * set.length)*2;
+			var top = ele.offset().top - $top + (set.height * set.length)*2;
 			ele.css('top', top + 'px');
 		}
 		//矫正偏差值
